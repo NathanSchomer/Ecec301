@@ -1,0 +1,25 @@
+class person(object)
+	__init__()
+	_name
+	_birth_year
+	getName()
+	getBirth()
+	__repr__()
+
+
+	class student()
+		__init__()
+		_major
+		_gpa
+		getMajor()
+		setMajor()
+		getGPA()
+		setGPA()
+		__repr__()
+	
+	class instructor
+		__init__()
+		_salary
+		getSalary()
+		setSalary()
+		__repr__()
