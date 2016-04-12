@@ -42,7 +42,7 @@ def generate_world(opts):
             world.append(tmp_row)
 
     elif opts.world_type == 'empty':
-        world = [[0]*opts.rows]*opts.cols
+        world = [[0 for i in range(opts.cols)] for j in range(opts.rows)]
     #
     #
     #######################################################################
@@ -66,12 +66,47 @@ def update_frame(frame_num, opts, world, img):
     # 'new_world' so that we may maintain an in-tact copy of the current
     # 'world' at the same time.
     new_world = []
+
     for row in world:
         new_world.append(row[:])
 
     ## TASK 3 #############################################################
     #
-    #                    [ YOUR CODE GOES HERE ]
+    #
+    # loop through each position in world
+    #   sum surrounding squares (max 8)
+    #   if sum is 3:
+    #       new_world[pos] = live
+    #   elif sum > 3 or sum < 2:
+    #       new_world[pos] = dead
+    #
+    
+    for row_idx, row in enumerate(world):
+        for col_idx, col in enumerate(row):
+            last_row_idx = (row_idx - 1) % len(world)
+            next_row_idx = (row_idx + 1) % len(world)
+            last_col_idx = (col_idx - 1) % len(row)
+            next_col_idx = (col_idx + 1) % len(row)
+            
+            top = world[last_row_idx][col_idx]
+            bottom = world[next_row_idx][col_idx]
+            left = world[row_idx][last_col_idx]
+            right = world[row_idx][next_col_idx]
+            top_left = world[last_row_idx][last_col_idx]
+            bottom_left = world[next_row_idx][last_col_idx]
+            top_right = world[last_row_idx][next_col_idx]
+            bottom_right = world[next_row_idx][next_col_idx]
+
+            cell_sum = top + bottom + left + right + top_left + bottom_left + top_right + bottom_right
+
+            curr_cell = world[row_idx][col_idx]
+
+            if cell_sum > 3 or cell_sum < 2:
+                curr_cell = 0 #dead
+            elif cell_sum is 3:
+                curr_cell = 1 #live
+            
+            new_world[row_idx][col_idx] = curr_cell
     #
     #######################################################################
 
@@ -98,25 +133,11 @@ def blit(world, sprite, x, y):
     ## TASK 2 #############################################################
     #
     #
-    #
-    #
-
-    count = 0
-
-    for row_idx,sprite_row in enumerate(sprite):
-        for col_idx,sprite_col in enumerate(sprite_row):
-           world[row_idx][col_idx] = sprite_col
-           if sprite_col is 1:
-               count += 1
     
-    print 'count: ' + str(count)
-
-    #for line in world:
-    #    print line
-
-    # desired_row = 0  
-    # desired_col = 0
-    #
+    for row_idx,sprite_row in enumerate(sprite):
+        for col_idx,curr_val in enumerate(sprite_row):
+           world[row_idx+x][col_idx+y] = curr_val
+    
     #
     #
     #######################################################################
@@ -229,6 +250,9 @@ def main():
     report_options(opts)
 
     blit(world, patterns.glider, 20, 20)
+   
+    for line in world:
+        print line
 
     run_simulation(opts, world)
 
