@@ -1,0 +1,35 @@
+
+Fraction objects created for testing:
+1/2
+2/3
+3/7
+5
+
+1/2 + 1/2 = 1
+1/2 + 2/3 = 7/6
+3/7 + 5 = 38/7
+
+1/2 == 1/2 is True
+1/2 == 2/3 is False
+
+1/2 < 1/2 is False
+1/2 < 2/3 is True
+2/3 < 1/2 is False
+
+1/2 != 1/2 is False
+1/2 != 2/3 is True
+
+1/2 <= 1/2 is True
+1/2 <= 2/3 is True
+2/3 <= 1/2 is False
+
+1/2 > 1/2 is False
+1/2 > 2/3 is False
+2/3 > 1/2 is True
+
+1/2 >= 1/2 is True
+1/2 >= 2/3 is False
+2/3 >= 1/2 is True
+
+Cast 1/2 to float: 0.5
+Cast 2/3 to float: 0.666666666667

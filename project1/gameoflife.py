@@ -30,19 +30,26 @@ def generate_world(opts):
 
     ## TASK 1 #############################################################
     #
+    #
+
     if opts.world_type == 'random':
-        print 'time to make a rando world!'
         for col in range(opts.cols):
+            #create temporary row before it's written to the world
             tmp_row = []
+            #create requested number of rows
             for row in range(opts.rows):
+                #each cell has a 10% probability of being alive
                 if random.random() <= 0.1:
-                   tmp_row.append(1)
+                    tmp_row.append(1)
                 else:
-                   tmp_row.append(0)
+                    tmp_row.append(0)
+            #append the temporary row to the world
             world.append(tmp_row)
 
     elif opts.world_type == 'empty':
+        #create empty world of requested dimensions
         world = [[0 for i in range(opts.cols)] for j in range(opts.rows)]
+
     #
     #
     #######################################################################
@@ -73,21 +80,18 @@ def update_frame(frame_num, opts, world, img):
     ## TASK 3 #############################################################
     #
     #
-    # loop through each position in world
-    #   sum surrounding squares (max 8)
-    #   if sum is 3:
-    #       new_world[pos] = live
-    #   elif sum > 3 or sum < 2:
-    #       new_world[pos] = dead
-    #
-    
+
     for row_idx, row in enumerate(world):
         for col_idx, col in enumerate(row):
+            #index values of rows and colums surrounding current cell
+            # useful for calculating indexes of surrounding cells
+            # compensate for possibility of wrap-around
             last_row_idx = (row_idx - 1) % len(world)
             next_row_idx = (row_idx + 1) % len(world)
             last_col_idx = (col_idx - 1) % len(row)
             next_col_idx = (col_idx + 1) % len(row)
-            
+ 
+            #get values of all 8 surrounding cells
             top = world[last_row_idx][col_idx]
             bottom = world[next_row_idx][col_idx]
             left = world[row_idx][last_col_idx]
@@ -96,16 +100,18 @@ def update_frame(frame_num, opts, world, img):
             bottom_left = world[next_row_idx][last_col_idx]
             top_right = world[last_row_idx][next_col_idx]
             bottom_right = world[next_row_idx][next_col_idx]
-
-            cell_sum = top + bottom + left + right + top_left + bottom_left + top_right + bottom_right
-
-            curr_cell = world[row_idx][col_idx]
-
-            if cell_sum > 3 or cell_sum < 2:
-                curr_cell = 0 #dead
-            elif cell_sum is 3:
-                curr_cell = 1 #live
             
+            #sum values of surrounding cells
+            cell_sum = top + bottom + left + right + top_left + bottom_left + top_right + bottom_right
+            
+            curr_cell = world[row_idx][col_idx]
+            #use sum of surrounding cells to determine if cell lives or dies
+            if cell_sum > 3 or cell_sum < 2:
+                curr_cell = 0
+            elif cell_sum is 3:
+                curr_cell = 1
+            
+            #write value to new_world (the frame buffer)
             new_world[row_idx][col_idx] = curr_cell
     #
     #######################################################################
@@ -133,11 +139,17 @@ def blit(world, sprite, x, y):
     ## TASK 2 #############################################################
     #
     #
-    
-    for row_idx,sprite_row in enumerate(sprite):
-        for col_idx,curr_val in enumerate(sprite_row):
-           world[row_idx+x][col_idx+y] = curr_val
-    
+
+    #iterate through each row in world
+    for row_idx, sprite_row in enumerate(sprite):
+        #iterate through each column in current row
+        for col_idx, curr_val in enumerate(sprite_row):
+            #find target indexes in world, and compensate for wrap-around
+            target_row = (row_idx + x) % len(world)
+            target_col = (col_idx + y) % len(world[0])
+            #assign value of current position in sprite to target position in world
+            world[target_row][target_col] = curr_val
+
     #
     #
     #######################################################################
@@ -155,7 +167,7 @@ def run_simulation(opts, world):
                  the 2D world matrix) will be rendered as black pixels and
                  'dead' cells (represetned as 0s) will be rendered as
                  white pixels.  The method FuncAnimation() accepts 4
-                 parameters: the figure, the frame update function, a
+                 update_frameters: the figure, the frame update function, a
                  tuple containing arguments to pass to the update function,
                  and the frame update interval (in milliseconds).  Once the
                  show() method is called to display the plot, the frame
@@ -251,9 +263,6 @@ def main():
 
     blit(world, patterns.glider, 20, 20)
    
-    for line in world:
-        print line
-
     run_simulation(opts, world)
 
 
