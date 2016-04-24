@@ -21,17 +21,8 @@ class CharCounter(object):
         return
 
     def __iter__(self):
-        return self
-
-    def next(self):
-        try:
-            ret = self._words[self._idx]
-        except IndexError:
-            raise StopIteration
-
-        self._idx += 1    
-        return ret
-
+        for word in self._words:
+            yield word
 
 if __name__ == "__main__":
     for word in CharCounter('agency.txt', 11):
