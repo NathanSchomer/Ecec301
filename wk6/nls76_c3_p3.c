@@ -10,7 +10,7 @@ int main(void){
     printf("Group identifier: %d\n", groupId);
     printf("Publisher code: %d\n", code);
     printf("Item number: %d\n", itemNum);
-    printf("Check digit:w: %d\n", check);
+    printf("Check digit: %d\n", check);
 
     return 0;
 }
