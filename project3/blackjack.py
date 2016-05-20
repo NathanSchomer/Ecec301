@@ -239,7 +239,7 @@
 # Please read the documentation for the random module.  It will make your
 # life much easier... don't reinvent code when a method already exists that
 # does what you need to do.
-import random
+from random import shuffle
 
 # Dictionary of unicode symbols for playing card suits
 suit_lut = {'clubs': u'\u2663',
@@ -289,19 +289,22 @@ class FaceCard(Card):
     """
     Represents a Face Card (Jack, Queen, King) possessing a suit.
     """
-    #######################################################################
-    #                         [YOUR CODE HERE]
-    #######################################################################
-
-
+    def __init__(self, face, suit):
+        super(FaceCard, self).__init__(10, suit) #standard value of 10 for all face cards
+        self._face = face
+        
 class AceCard(Card):
     """
     Represents an Ace Card possessing a suit.
     """
-    #######################################################################
-    #                         [YOUR CODE HERE]
-    #######################################################################
+    def __init__(self, suit):
+        super(AceCard, self).__init__(1, suit) #init with hard value
 
+    def softValue(self):
+        """Returns the softValue of the Card"""
+        return 11   #soft value for aces is 11
+    def unicode(self):
+        return "%s %s" % (self._suit, 'A')
 
 class CardContainer(object):
     """
@@ -319,25 +322,19 @@ class CardContainer(object):
         """
         Shuffles the cards in the CardContainer
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        shuffle(self._cards)
 
     def popCard(self):
         """
         Removes a card from the CardContainer and returns it
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        return self._cards.pop()
 
     def pushCard(self, card):
         """
         Adds a card to the CardContainer
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        self._cards.append(card)
 
     def __iter__(self):
         """
@@ -368,19 +365,22 @@ class Deck(CardContainer):
     offered by Deck objects is dealCard()
     """
     def __init__(self):
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        super(Deck, self).__init__()
 
     def _loadDeck(self):
         """
         Generates 52 cards and pushes them onto the Deck. For each of the 4
         suits, 2-10, J, Q, K, A are generated and pushed onto the Deck.
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        for suit in suits:
+            self.pushCard(AceCard(suit))
+            for face in face_cards:
+                self.pushCard(FaceCard(face, suit))
+            for num in range(2,11): # 2 through 10
+                self.pushCard(Card(num, suit))
 
+        self.shuffle()
+    
     def dealCard(self):
         """
         Removes a Card object from the Deck object *AND* returns it so that
@@ -388,9 +388,10 @@ class Deck(CardContainer):
         deck is empty, dealCard() should reload the Deck with a shuffled
         standard 52 card assortment of playing cards.
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        if(len(self._cards) == 0):
+            self._loadDeck()
+
+        return self.popCard()
 
 
 class Hand(CardContainer):
@@ -399,50 +400,53 @@ class Hand(CardContainer):
     object inherits from CardContainer.
     """
     def __init__(self):
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        super(Hand, self).__init__()
+        self._hole = None
 
     def getHoleCard(self):
         """
         Returns the hole card (but does not remove it from the Hand)
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        return self._hole
 
     def clear(self):
         """
         Removes all cards from the Hand in preperation for another round
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        self._hole = None
+        self._cards = []
 
     def getCard(self, card):
         """
         Adds a Card object to the Hand.  If the Hand empty, the card should
         go into the hole; otherwise, the card should be showing.
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        if len(self._cards) is 0 and self._hole is None:
+            self._hole = card
+        else:
+            self.pushCard(card)
+
 
     def getSoftScore(self):
         """
         Iterates through the Cards in the Hand and returns the soft score
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        score = self._hole.softValue()
+        for card in self:
+            score = score +  card.softValue()
+
+        return score
 
     def getHardScore(self):
         """
         Iterates through the Cards in the Hand and returns the hard score
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        score = self._hole.hardValue()
+        for card in self:
+            score = score +  card.hardValue()
+
+        return score
+
 
 
 class Game(object):
@@ -464,7 +468,7 @@ class Game(object):
         and soft scores for the current state of the Hand, displays the hole
         card, and displays all cards showing.
         """
-        print 'Player: [%i, %i]' % (self._player.getHardScore(), self._player.getSoftScore())
+        print '\nPlayer: [%i, %i]' % (self._player.getHardScore(), self._player.getSoftScore())
         print '     Hole: %s' % self._player.getHoleCard().unicode()
         print '  Showing:',
         for card in self._player:
@@ -476,7 +480,7 @@ class Game(object):
         Prints state of the House's hand to the screen.  Only displays the
         cards showing (i.e. does not display the House's hole card).
         """
-        print 'House:'
+        print '\nHouse:'
         print '  Showing:',
         for card in self._house:
             print '%s,' % card.unicode(),
@@ -496,18 +500,15 @@ class Game(object):
         Gets *number* cards from the Deck and adds them to
         the House's Hand.
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        card = self._deck.popCard()
+        self._house.getCard(card)
 
     def _checkPlayerBust(self):
         """
         Returns True if the Player has bust (i.e. Hard Score > 21),
         otherwise returns False.
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        return self._player.getHardScore() > 21
 
     def _doHouseAi(self):
         """
@@ -515,17 +516,28 @@ class Game(object):
         long as its score is under 18.  If the House has 21, it should stop
         immediately.
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        while self._house.getHardScore() < 18 and self._house.getSoftScore is not 21:
+            self._house.getCard(self._deck.popCard())
+            self._printHouse()
 
     def _checkWhoWins(self):
         """
         Compute the scores for the House and Player and announce the winner
         """
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        
+        player_hard = 21 - self._player.getHardScore()
+        player_soft = 21 - self._player.getSoftScore()
+        house_hard  = 21 - self._house.getHardScore()
+        house_soft  = 21 - self._house.getSoftScore()
+
+        # this logic is messy but it works
+        if player_soft is 0 and house_soft is 0:
+            print "Tie"
+        elif not self._checkPlayerBust() and (player_soft is 0 or player_hard is 0 or player_hard < house_hard or player_soft < house_soft):
+            print "The player wins"
+        else:
+            print "The house wins"
+        
 
     def _promptChoices(self, prompt, choices):
         """
@@ -579,15 +591,28 @@ class Game(object):
         21) will prematurely end the hand.
         """
         self._startNewHand()
+        
+        #user's turn
+        
+        self._printPlayer()
+        while  self._promptChoices('Hit or Stay? [h]it, [s]tay: ', ['h', 's']) is 'h' and not self._checkPlayerBust():
+            self._player.getCard(self._deck.popCard())
+            self._printPlayer()
+            if self._player.getHardScore() > 21:
+                print "\nBUST!! with score of %i\n" % self._player.getHardScore()
+                break
 
-        ###################################################################
-        #                         [YOUR CODE HERE]
-        ###################################################################
+        # AI's turn
+        if not self._checkPlayerBust():
+            self._doHouseAi()
+       
+        print ''
 
         self._checkWhoWins()
 
-        choice = self._promptChoices('Play Again? [y]es, [n]o: ', ['y', 'n'])
+        choice = self._promptChoices('\nPlay Again? [y]es, [n]o: ', ['y', 'n'])
         if choice is 'y':
+            print ( '\n' +  '-'*30)*2
             return True
         elif choice is 'n':
             return False
