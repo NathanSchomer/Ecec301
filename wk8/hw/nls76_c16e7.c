@@ -5,7 +5,7 @@ struct fraction {
     int denominator;
 };
 
-/* prototypes/declarations */
+/* prototypes/ declarations */
 void init_fraction(struct fraction* this, int num, int denom)
 {
     this->numerator = num;
@@ -92,14 +92,46 @@ void divide(struct fraction* a, struct fraction* b, struct fraction* result)
 
 void printFrac(struct fraction* this)
 {
-    printf("%d/%d\n", this->numerator, this->denominator);
+    printf("%d/%d", this->numerator, this->denominator);
 }
 
 void main()
 {
     struct fraction x, y, z;
-    init_fraction(&x, 8, 8);
-    init_fraction(&y, 1, 2);
+    
+    //create 2 fractions
+    init_fraction(&x, 4, 8);
+    init_fraction(&y, 2, 3);
+
+    printf("\nInitialized: \n");
+    printf(" x = "); printFrac(&x);
+    printf("\n y = "); printFrac(&y);
+    printf("\n\n");
+    
+    //reduce fraction x
+    printFrac(&x);
+    printf(" reduced is "); 
+    reduce(&x);
+    printFrac(&x);
+
+    //add fractions
+    add(&x, &y, &z);
+    reduce(&z);
+    printf("\n\n x + y = "); printFrac(&z);
+
+    //subraction fractions
+    subtract(&x, &y, &z);
+    reduce(&z);
+    printf("\n\n x - y = "); printFrac(&z);
+
+    //divide fractions
     divide(&x, &y, &z);
-    printFrac(&z);
+    reduce(&z);
+    printf("\n\n x / y = "); printFrac(&z);
+
+    //multiply fractions
+    multiply(&x, &y, &z);
+    reduce(&z);
+    printf("\n\n x * y = "); printFrac(&z);
+    printf("\n\n");
 }
