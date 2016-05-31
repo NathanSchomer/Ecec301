@@ -11,14 +11,13 @@
 struct point { int x, y; };
 struct rectangle { struct point upper_left, lower_right; };
 
-void main( void )
+int main( void )
 {
+    //declare and initalize rectangle
     struct rectangle *p;
     p = malloc(sizeof(struct rectangle));
     
-    p->upper_left = *(struct point*)malloc(sizeof(struct point));
-    p->lower_right = *(struct point*)malloc(sizeof(struct point));
-    
+    //set corner coordinates of rectangle
     p->upper_left.x = 10;
     p->upper_left.y = 25;
     p->lower_right.x = 20;
@@ -28,5 +27,8 @@ void main( void )
                                                                     p->upper_left.y,
                                                                     p->lower_right.x,
                                                                     p->lower_right.y);
+    //free memory associated with rectangle p
     free(p);
+
+    return 0;
 }

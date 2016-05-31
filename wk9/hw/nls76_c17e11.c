@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 /*
  * The list parameter points to a linked list; the function should return
  * the number of times that n appears in this list. Assume that the node
@@ -41,7 +42,7 @@ int count_occurances(struct node *list, int n)
     return cnt;
 }
 
-void main( void )
+int main( void )
 {
     struct node *first = NULL;
     struct node *item = NULL;
@@ -65,4 +66,6 @@ void main( void )
         item = item->next; 
     }
     printf("]\nOccurances of 5 in list: %d\n\n", i);
+
+    return 0;
 }

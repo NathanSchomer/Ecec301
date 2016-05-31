@@ -21,15 +21,17 @@ int* create_array(int n, int initial_value)
     return array;
 }
 
-void main( void )
+int main( void )
 {
     int i, val = 2, size = 5;
     int* array;
 
     array = create_array(size, val);
 
-    printf("\nArray of length %d with vlaues of %d:\n [ ", val, size);
+    printf("\nArray of length %d with vlaues of %d:\n [ ", size, val);
     for(i=0; i<size; i++)
         printf("%d ", array[i]);
     printf("]\n\n");
+
+    return 0;
 }

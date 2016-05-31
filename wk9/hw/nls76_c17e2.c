@@ -38,7 +38,7 @@ char* duplicate(char* str)
     return newStr;
 }
 
-void main( void )
+int main( void )
 {
     char* p;
     char str[] = "This is a test";
@@ -47,4 +47,6 @@ void main( void )
     
     printf("\nOrig string \"%s\" base at %p\n", str, &(str[0]));
     printf("string Copy \"%s\" base at %p\n\n", str, &(p[0])); 
+
+    return 0;
 }
